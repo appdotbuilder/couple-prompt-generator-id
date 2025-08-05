@@ -1,15 +1,33 @@
 
+import { db } from '../db';
+import { generatedPromptsTable } from '../db/schema';
 import { type GeneratePromptInput, type GeneratedPrompt } from '../schema';
 
-export async function generatePrompt(input: GeneratePromptInput): Promise<GeneratedPrompt> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is generating a comprehensive AI image prompt from the input attributes.
-    // It should combine all the visual elements, poses, attire, and styling into a cohesive prompt
-    // optimized for AI image generators, with special attention to Indonesian cultural elements.
-    const placeholderPrompt = `A ${input.visual_style} photograph of an Indonesian couple in ${input.theme} style, ${input.couple_pose}, ${input.lighting} lighting, ${input.camera_angle} camera angle, ${input.studio_background} background. Man wearing ${input.mens_top} and ${input.mens_bottom}. Woman wearing ${input.womens_clothing}${input.hijab_style ? ` with ${input.hijab_style}` : ''}${input.accessories ? `, accessories: ${input.accessories}` : ''}.`;
-    
-    return Promise.resolve({
-        id: 0, // Placeholder ID
+export const generatePrompt = async (input: GeneratePromptInput): Promise<GeneratedPrompt> => {
+  try {
+    // Construct the AI prompt text based on input parameters
+    const promptParts = [
+      `Create a ${input.theme.toLowerCase()} couple portrait`,
+      `in ${input.visual_style.toLowerCase()} style.`,
+      `Pose: ${input.couple_pose}.`,
+      `Setting: ${input.studio_background}.`,
+      `Lighting: ${input.lighting}.`,
+      `Camera angle: ${input.camera_angle}.`,
+      `Man wearing: ${input.mens_top}, ${input.mens_bottom}.`,
+      `Woman wearing: ${input.womens_clothing}${input.hijab_style ? `, ${input.hijab_style}` : ''}.`
+    ];
+
+    if (input.accessories) {
+      promptParts.push(`Accessories: ${input.accessories}.`);
+    }
+
+    promptParts.push(`Aspect ratio: ${input.aspect_ratio}`);
+
+    const generatedPromptText = promptParts.join(' ');
+
+    // Insert the generated prompt into the database
+    const result = await db.insert(generatedPromptsTable)
+      .values({
         template_id: input.template_id || null,
         theme: input.theme,
         visual_style: input.visual_style,
@@ -22,7 +40,15 @@ export async function generatePrompt(input: GeneratePromptInput): Promise<Genera
         womens_clothing: input.womens_clothing,
         hijab_style: input.hijab_style,
         accessories: input.accessories,
-        generated_prompt: placeholderPrompt,
-        created_at: new Date() // Placeholder date
-    } as GeneratedPrompt);
-}
+        aspect_ratio: input.aspect_ratio,
+        generated_prompt: generatedPromptText
+      })
+      .returning()
+      .execute();
+
+    return result[0];
+  } catch (error) {
+    console.error('Prompt generation failed:', error);
+    throw error;
+  }
+};

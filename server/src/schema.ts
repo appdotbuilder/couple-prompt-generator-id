@@ -1,83 +1,65 @@
 
 import { z } from 'zod';
 
-// Enums for predefined options
+// Enums for predefined options with exact strings from frontend
 export const themeEnum = z.enum([
-  'traditional_indonesian',
-  'modern_casual',
-  'formal_elegant',
-  'bohemian',
-  'minimalist',
-  'vintage',
-  'beach',
-  'urban',
-  'garden',
-  'cultural_fusion'
+  "Formal",
+  "Casual",
+  "Vintage",
+  "Fantasy",
+  "Traditional Javanese",
+  "Traditional Balinese"
 ]);
 
 export const visualStyleEnum = z.enum([
-  'cinematic',
-  'portrait',
-  'lifestyle',
-  'documentary',
-  'artistic',
-  'candid',
-  'fashion',
-  'dreamy',
-  'dramatic',
-  'natural'
+  "Realistic Photography",
+  "Cinematic",
+  "Black and White",
+  "Oil Painting",
+  "Anime Style"
 ]);
 
 export const studioBackgroundEnum = z.enum([
-  'white_seamless',
-  'black_backdrop',
-  'gray_gradient',
-  'wooden_texture',
-  'brick_wall',
-  'fabric_drape',
-  'nature_backdrop',
-  'abstract_pattern',
-  'solid_color',
-  'textured_paper'
+  "Plain Grey Wall",
+  "Classic Library Setting",
+  "Industrial Loft Window",
+  "Red Velvet Curtains",
+  "Bookshelf Backdrop",
+  "Floral Wall"
 ]);
 
 export const lightingEnum = z.enum([
-  'natural_light',
-  'studio_lighting',
-  'golden_hour',
-  'soft_diffused',
-  'dramatic_contrast',
-  'rim_lighting',
-  'low_key',
-  'high_key',
-  'warm_tone',
-  'cool_tone'
+  "Soft window light",
+  "Elegant studio lighting",
+  "Golden hour sunset glow",
+  "Dramatic neon lights",
+  "Dim ambient light"
 ]);
 
 export const cameraAngleEnum = z.enum([
-  'eye_level',
-  'slightly_above',
-  'slightly_below',
-  'close_up',
-  'medium_shot',
-  'full_body',
-  'three_quarter',
-  'profile_view',
-  'candid_angle',
-  'artistic_perspective'
+  "Eye-level shot",
+  "Full body shot",
+  "Close-up",
+  "Low angle shot",
+  "High angle shot"
 ]);
 
 export const couplePoseEnum = z.enum([
-  'standing_embrace',
-  'sitting_together',
-  'walking_hand_in_hand',
-  'forehead_touch',
-  'back_to_back',
-  'piggyback',
-  'dancing_pose',
-  'looking_at_each_other',
-  'laughing_together',
-  'romantic_gaze'
+  "Standing parallel, facing camera, soft expression",
+  "Man standing behind, woman sitting elegantly on a chair",
+  "Looking at each other with a slight smile",
+  "Man holding the woman's hand from the side",
+  "Sitting side-by-side, slightly angled towards each other",
+  "Woman seated, man sitting on the armrest",
+  "Posed as if walking slowly, man slightly ahead",
+  "Man holding the woman's arm from behind",
+  "Sitting facing each other, hands on a small table",
+  "Formal standing pose, hands in front",
+  "Seated facing each other, half-body shot",
+  "Man leaning against a wall, woman in front",
+  "Woman holding a bouquet, man standing beside her",
+  "Sitting on the studio floor with a carpet",
+  "Man slightly bowing to greet the woman"
 ]);
 
 // Prompt template schema
@@ -96,6 +78,7 @@ export const promptTemplateSchema = z.object({
   womens_clothing: z.string(),
   hijab_style: z.string().nullable(),
   accessories: z.string().nullable(),
+  aspect_ratio: z.string(), // Added aspect ratio field
   is_preset: z.boolean(),
   created_at: z.coerce.date()
 });
@@ -117,6 +100,7 @@ export const generatedPromptSchema = z.object({
   womens_clothing: z.string(),
   hijab_style: z.string().nullable(),
   accessories: z.string().nullable(),
+  aspect_ratio: z.string(), // Added aspect ratio field
   generated_prompt: z.string(),
   created_at: z.coerce.date()
 });
@@ -138,6 +122,7 @@ export const createPromptTemplateInputSchema = z.object({
   womens_clothing: z.string().min(1),
   hijab_style: z.string().nullable(),
   accessories: z.string().nullable(),
+  aspect_ratio: z.string(), // Added aspect ratio field
   is_preset: z.boolean().default(false)
 });
 
@@ -155,7 +140,8 @@ export const generatePromptInputSchema = z.object({
   mens_bottom: z.string().min(1),
   womens_clothing: z.string().min(1),
   hijab_style: z.string().nullable(),
-  accessories: z.string().nullable()
+  accessories: z.string().nullable(),
+  aspect_ratio: z.string() // Added aspect ratio field
 });
 
 export type GeneratePromptInput = z.infer<typeof generatePromptInputSchema>;
@@ -169,12 +155,13 @@ export type RandomizePromptInput = z.infer<typeof randomizePromptInputSchema>;
 
 // Response schemas
 export const promptOptionsSchema = z.object({
-  themes: z.array(z.string()),
-  visualStyles: z.array(z.string()),
-  studioBackgrounds: z.array(z.string()),
-  lighting: z.array(z.string()),
-  cameraAngles: z.array(z.string()),
-  couplePoses: z.array(z.string())
+  themes: z.array(themeEnum),
+  visualStyles: z.array(visualStyleEnum),
+  studioBackgrounds: z.array(studioBackgroundEnum),
+  lighting: z.array(lightingEnum),
+  cameraAngles: z.array(cameraAngleEnum),
+  couplePoses: z.array(couplePoseEnum),
+  aspectRatios: z.record(z.string(), z.string()) // Added aspect ratios
 });
 
 export type PromptOptions = z.infer<typeof promptOptionsSchema>;

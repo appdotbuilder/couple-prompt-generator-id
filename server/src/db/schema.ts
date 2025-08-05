@@ -2,83 +2,65 @@
 import { serial, text, pgTable, timestamp, boolean, integer, pgEnum } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-// Define enums
+// Define enums with exact strings from frontend
 export const themeEnum = pgEnum('theme', [
-  'traditional_indonesian',
-  'modern_casual',
-  'formal_elegant',
-  'bohemian',
-  'minimalist',
-  'vintage',
-  'beach',
-  'urban',
-  'garden',
-  'cultural_fusion'
+  "Formal",
+  "Casual",
+  "Vintage",
+  "Fantasy",
+  "Traditional Javanese",
+  "Traditional Balinese"
 ]);
 
 export const visualStyleEnum = pgEnum('visual_style', [
-  'cinematic',
-  'portrait',
-  'lifestyle',
-  'documentary',
-  'artistic',
-  'candid',
-  'fashion',
-  'dreamy',
-  'dramatic',
-  'natural'
+  "Realistic Photography",
+  "Cinematic",
+  "Black and White",
+  "Oil Painting",
+  "Anime Style"
 ]);
 
 export const studioBackgroundEnum = pgEnum('studio_background', [
-  'white_seamless',
-  'black_backdrop',
-  'gray_gradient',
-  'wooden_texture',
-  'brick_wall',
-  'fabric_drape',
-  'nature_backdrop',
-  'abstract_pattern',
-  'solid_color',
-  'textured_paper'
+  "Plain Grey Wall",
+  "Classic Library Setting",
+  "Industrial Loft Window",
+  "Red Velvet Curtains",
+  "Bookshelf Backdrop",
+  "Floral Wall"
 ]);
 
 export const lightingEnum = pgEnum('lighting', [
-  'natural_light',
-  'studio_lighting',
-  'golden_hour',
-  'soft_diffused',
-  'dramatic_contrast',
-  'rim_lighting',
-  'low_key',
-  'high_key',
-  'warm_tone',
-  'cool_tone'
+  "Soft window light",
+  "Elegant studio lighting",
+  "Golden hour sunset glow",
+  "Dramatic neon lights",
+  "Dim ambient light"
 ]);
 
 export const cameraAngleEnum = pgEnum('camera_angle', [
-  'eye_level',
-  'slightly_above',
-  'slightly_below',
-  'close_up',
-  'medium_shot',
-  'full_body',
-  'three_quarter',
-  'profile_view',
-  'candid_angle',
-  'artistic_perspective'
+  "Eye-level shot",
+  "Full body shot",
+  "Close-up",
+  "Low angle shot",
+  "High angle shot"
 ]);
 
 export const couplePoseEnum = pgEnum('couple_pose', [
-  'standing_embrace',
-  'sitting_together',
-  'walking_hand_in_hand',
-  'forehead_touch',
-  'back_to_back',
-  'piggyback',
-  'dancing_pose',
-  'looking_at_each_other',
-  'laughing_together',
-  'romantic_gaze'
+  "Standing parallel, facing camera, soft expression",
+  "Man standing behind, woman sitting elegantly on a chair",
+  "Looking at each other with a slight smile",
+  "Man holding the woman's hand from the side",
+  "Sitting side-by-side, slightly angled towards each other",
+  "Woman seated, man sitting on the armrest",
+  "Posed as if walking slowly, man slightly ahead",
+  "Man holding the woman's arm from behind",
+  "Sitting facing each other, hands on a small table",
+  "Formal standing pose, hands in front",
+  "Seated facing each other, half-body shot",
+  "Man leaning against a wall, woman in front",
+  "Woman holding a bouquet, man standing beside her",
+  "Sitting on the studio floor with a carpet",
+  "Man slightly bowing to greet the woman"
 ]);
 
 // Prompt templates table for saving and reusing configurations
@@ -97,11 +79,12 @@ export const promptTemplatesTable = pgTable('prompt_templates', {
   womens_clothing: text('womens_clothing').notNull(),
   hijab_style: text('hijab_style'), // Nullable - optional hijab
   accessories: text('accessories'), // Nullable - optional accessories
+  aspect_ratio: text('aspect_ratio').notNull(), // Added aspect ratio field
   is_preset: boolean('is_preset').notNull().default(false), // Whether it's a system preset
   created_at: timestamp('created_at').defaultNow().notNull(),
 });
 
-// Generated prompts table for tracking usage and history  
+// Generated prompts table for tracking usage and history
 export const generatedPromptsTable = pgTable('generated_prompts', {
   id: serial('id').primaryKey(),
   template_id: integer('template_id'), // Nullable - can be generated without template
@@ -116,6 +99,7 @@ export const generatedPromptsTable = pgTable('generated_prompts', {
   womens_clothing: text('womens_clothing').notNull(),
   hijab_style: text('hijab_style'), // Nullable
   accessories: text('accessories'), // Nullable
+  aspect_ratio: text('aspect_ratio').notNull(), // Added aspect ratio field
   generated_prompt: text('generated_prompt').notNull(), // The final AI prompt text
   created_at: timestamp('created_at').defaultNow().notNull(),
 });
@@ -139,7 +123,7 @@ export type GeneratedPrompt = typeof generatedPromptsTable.$inferSelect;
 export type NewGeneratedPrompt = typeof generatedPromptsTable.$inferInsert;
 
 // Export all tables and relations for proper query building
-export const tables = { 
+export const tables = {
   promptTemplates: promptTemplatesTable,
   generatedPrompts: generatedPromptsTable
 };

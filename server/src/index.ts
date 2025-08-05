@@ -4,16 +4,18 @@ import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import 'dotenv/config';
 import cors from 'cors';
 import superjson from 'superjson';
+
+// Import schemas and handlers
 import { 
-  createPromptTemplateInputSchema, 
-  generatePromptInputSchema, 
-  randomizePromptInputSchema 
+  createPromptTemplateInputSchema,
+  generatePromptInputSchema,
+  randomizePromptInputSchema
 } from './schema';
+import { getPromptOptions } from './handlers/get_prompt_options';
 import { createPromptTemplate } from './handlers/create_prompt_template';
 import { getPromptTemplates } from './handlers/get_prompt_templates';
 import { generatePrompt } from './handlers/generate_prompt';
 import { randomizePrompt } from './handlers/randomize_prompt';
-import { getPromptOptions } from './handlers/get_prompt_options';
 import { getGeneratedPrompts } from './handlers/get_generated_prompts';
 
 const t = initTRPC.create({
@@ -28,27 +30,30 @@ const appRouter = router({
     return { status: 'ok', timestamp: new Date().toISOString() };
   }),
   
-  // Prompt template management
+  // Get all available options for dropdowns
+  getPromptOptions: publicProcedure
+    .query(() => getPromptOptions()),
+  
+  // Create a new prompt template
   createPromptTemplate: publicProcedure
     .input(createPromptTemplateInputSchema)
     .mutation(({ input }) => createPromptTemplate(input)),
   
+  // Get all prompt templates
   getPromptTemplates: publicProcedure
     .query(() => getPromptTemplates()),
   
-  // Prompt generation
+  // Generate a prompt from input parameters
   generatePrompt: publicProcedure
     .input(generatePromptInputSchema)
     .mutation(({ input }) => generatePrompt(input)),
   
+  // Randomize prompt parameters
   randomizePrompt: publicProcedure
     .input(randomizePromptInputSchema)
     .mutation(({ input }) => randomizePrompt(input)),
   
-  // Utility endpoints
-  getPromptOptions: publicProcedure
-    .query(() => getPromptOptions()),
-  
+  // Get generated prompt history
   getGeneratedPrompts: publicProcedure
     .query(() => getGeneratedPrompts()),
 });

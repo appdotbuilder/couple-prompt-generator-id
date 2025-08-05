@@ -1,9 +1,21 @@
 
+import { db } from '../db';
+import { generatedPromptsTable } from '../db/schema';
 import { type GeneratedPrompt } from '../schema';
+import { desc } from 'drizzle-orm';
 
-export async function getGeneratedPrompts(): Promise<GeneratedPrompt[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching the history of generated prompts from the database.
-    // This allows users to review and reuse previously generated prompts.
-    return [];
-}
+export const getGeneratedPrompts = async (): Promise<GeneratedPrompt[]> => {
+  try {
+    // Query all generated prompts, ordered by creation date (newest first)
+    const results = await db.select()
+      .from(generatedPromptsTable)
+      .orderBy(desc(generatedPromptsTable.created_at))
+      .execute();
+
+    // Return results as-is since no numeric conversions needed
+    return results;
+  } catch (error) {
+    console.error('Failed to fetch generated prompts:', error);
+    throw error;
+  }
+};

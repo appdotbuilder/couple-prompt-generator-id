@@ -1,12 +1,13 @@
 
+import { db } from '../db';
+import { promptTemplatesTable } from '../db/schema';
 import { type CreatePromptTemplateInput, type PromptTemplate } from '../schema';
 
-export async function createPromptTemplate(input: CreatePromptTemplateInput): Promise<PromptTemplate> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is creating a new prompt template and persisting it in the database.
-    // This allows users to save their favorite combinations for reuse.
-    return Promise.resolve({
-        id: 0, // Placeholder ID
+export const createPromptTemplate = async (input: CreatePromptTemplateInput): Promise<PromptTemplate> => {
+  try {
+    // Insert prompt template record
+    const result = await db.insert(promptTemplatesTable)
+      .values({
         name: input.name,
         description: input.description,
         theme: input.theme,
@@ -20,7 +21,15 @@ export async function createPromptTemplate(input: CreatePromptTemplateInput): Pr
         womens_clothing: input.womens_clothing,
         hijab_style: input.hijab_style,
         accessories: input.accessories,
-        is_preset: input.is_preset,
-        created_at: new Date() // Placeholder date
-    } as PromptTemplate);
-}
+        aspect_ratio: input.aspect_ratio,
+        is_preset: input.is_preset
+      })
+      .returning()
+      .execute();
+
+    return result[0];
+  } catch (error) {
+    console.error('Prompt template creation failed:', error);
+    throw error;
+  }
+};
